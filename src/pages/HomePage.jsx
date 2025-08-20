@@ -1,10 +1,32 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { FaFlask, FaShieldAlt, FaCertificate } from 'react-icons/fa'
+import { useAuth } from '../contexts/AuthContext'
+import telegramWebApp from '../utils/telegram'
 
 const HomePage = () => {
+  const navigate = useNavigate()
+  const { user, isLoading } = useAuth()
+
+  const handleCatalogClick = () => {
+    telegramWebApp.hapticFeedback('impact', 'medium')
+    navigate('/catalog')
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Загрузка...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100" style={{ backgroundColor: 'var(--tg-theme-bg-color, #f8fafc)' }}>
       <div className="container mx-auto px-4 py-8">
         {/* Hero Section */}
         <motion.div 
@@ -16,13 +38,19 @@ const HomePage = () => {
           <h1 className="text-4xl md:text-6xl font-bold text-gray-800 mb-4">
             Russian Peptide
           </h1>
+          {user && (
+            <p className="text-lg text-indigo-600 mb-2">
+              Добро пожаловать, {user.firstName}!
+            </p>
+          )}
           <p className="text-xl text-gray-600 mb-8">
             Разработка и производство пептидов и биоактивных соединений
           </p>
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="bg-indigo-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors"
+            onClick={handleCatalogClick}
+            className="tg-button px-8 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity"
           >
             Перейти к каталогу
           </motion.button>
